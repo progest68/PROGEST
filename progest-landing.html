@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROGEST — Votre admin tourne toute seule | Artisans Haut-Rhin</title>
+<meta name="description" content="Progest automatise les devis, relances, factures et la trésorerie des artisans du Haut-Rhin. Un cockpit en temps réel, des relances qui partent seules. Démo gratuite de 15 min.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#071429; --navy2:#0d1f3c; --navy3:#112448; --line:#1e3a5f;
+    --gold:#FEBD59; --gold-d:#1f1606;
+    --cream:#F1EFE8; --paper:#ffffff;
+    --green:#3cb87a; --green-bg:#EAF3DE; --green-tx:#27500A;
+    --red:#e05555; --red-bg:#FCEBEB; --red-tx:#A32D2D;
+    --blue:#4A9CC7; --blue-bg:#E6F1FB; --blue-tx:#0C447C;
+    --amber-bg:#FAEEDA; --amber-tx:#633806;
+    --muted:#8fa3c0; --muted2:#c8d8ec;
+    --display:'Space Grotesk',sans-serif; --body:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--body);background:var(--navy);color:#fff;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.15;letter-spacing:-.02em}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  .eyebrow{font-family:var(--body);font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* NAV */
+  .nav{position:sticky;top:0;z-index:50;background:rgba(7,20,41,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:.12em}
+  .brand span{color:var(--gold)}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--gold-d);font-family:var(--display);font-weight:600;font-size:15px;padding:11px 20px;border-radius:9px;transition:transform .15s ease,filter .15s ease;white-space:nowrap}
+  .btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+  .btn svg{width:17px;height:17px}
+  .nav .btn{padding:9px 16px;font-size:14px}
+
+  /* HERO */
+  .hero{position:relative;padding:64px 0 72px;background:
+     repeating-linear-gradient(0deg,rgba(254,189,89,.045) 0 1px,transparent 1px 56px),
+     repeating-linear-gradient(90deg,rgba(254,189,89,.045) 0 1px,transparent 1px 56px),
+     var(--navy)}
+  .hero-grid{display:grid;grid-template-columns:1fr;gap:40px;align-items:center}
+  .hero h1{font-size:38px;font-weight:700}
+  .hero h1 .hl{color:var(--gold)}
+  .hero p.lead{color:var(--muted);font-size:17px;margin-top:18px;max-width:30ch}
+  .hero-cta{margin-top:28px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .ghost{color:#fff;font-weight:600;font-family:var(--display);font-size:15px;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);padding:11px 18px;border-radius:9px}
+  .trust{margin-top:22px;display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:13px}
+  .trust b{color:#fff;font-weight:600}
+
+  /* COCKPIT CARD (signature) */
+  .cockpit{background:var(--paper);border-radius:16px;padding:16px;color:#13202e;box-shadow:0 30px 60px -20px rgba(0,0,0,.55);position:relative}
+  .cockpit-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .cockpit-top .tt{font-family:var(--display);font-weight:600;font-size:14px;color:#13202e;display:flex;align-items:center;gap:8px}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--green-tx);background:var(--green-bg);padding:3px 9px;border-radius:20px;font-weight:600}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:13px}
+  .kpi{border-radius:10px;padding:10px}
+  .kpi .lab{font-size:10.5px;font-weight:500}
+  .kpi .val{font-family:var(--display);font-weight:700;font-size:18px;margin-top:2px}
+  .k-cream{background:var(--cream)} .k-cream .lab{color:#6b6a62} .k-cream .val{color:#13202e}
+  .k-red{background:var(--red-bg)} .k-red .lab{color:var(--red-tx)} .k-red .val{color:var(--red-tx)}
+  .k-amber{background:var(--amber-bg)} .k-amber .lab{color:var(--amber-tx)} .k-amber .val{color:var(--amber-tx)}
+  .rows .row{display:flex;align-items:center;justify-content:space-between;padding:9px 4px;border-bottom:1px solid #ECEAE2;font-size:13px}
+  .rows .row:last-child{border-bottom:0}
+  .rows .row .nm{color:#2C2C2A}
+  .pill{font-size:10.5px;font-weight:600;padding:2px 9px;border-radius:7px}
+  .p-green{background:var(--green-bg);color:var(--green-tx)}
+  .p-red{background:var(--red-bg);color:var(--red-tx)}
+  .p-blue{background:var(--blue-bg);color:var(--blue-tx)}
+  .spark{margin-top:12px;background:var(--cream);border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between}
+  .spark .lab{font-size:10.5px;color:#6b6a62;font-weight:500}
+  .spark .val{font-family:var(--display);font-weight:700;font-size:15px;color:var(--green-tx)}
+  .callout{position:absolute;background:var(--navy);color:#fff;font-size:11px;font-weight:500;padding:6px 10px;border-radius:8px;border:1px solid var(--gold);display:none}
+  .callout::after{content:"";position:absolute;width:8px;height:8px;background:var(--navy);border-right:1px solid var(--gold);border-bottom:1px solid var(--gold);transform:rotate(45deg)}
+
+  /* SECTION base */
+  section{padding:62px 0}
+  .sec-head{max-width:34ch;margin-bottom:34px}
+  .sec-head h2{font-size:27px;margin-top:8px}
+
+  /* PAIN */
+  .pains{display:grid;grid-template-columns:1fr;gap:14px}
+  .pain{background:var(--navy2);border:1px solid var(--line);border-left:3px solid var(--red);border-radius:0 12px 12px 0;padding:18px 20px;display:flex;gap:14px;align-items:flex-start}
+  .pain .ico{flex:0 0 auto;width:38px;height:38px;border-radius:9px;background:rgba(224,85,85,.12);display:flex;align-items:center;justify-content:center}
+  .pain .ico svg{width:20px;height:20px;color:var(--red)}
+  .pain h3{font-size:16px;font-weight:600;color:#fff}
+  .pain p{font-size:13.5px;color:var(--muted);margin-top:3px}
+
+  /* STEPS */
+  .steps{display:grid;grid-template-columns:1fr;gap:14px}
+  .step{background:var(--navy2);border:1px solid var(--line);border-radius:14px;padding:22px;text-align:center;position:relative}
+  .step .num{font-family:var(--display);font-weight:700;font-size:13px;color:var(--gold);letter-spacing:.1em}
+  .step .ico{width:54px;height:54px;margin:12px auto 14px;border-radius:13px;background:rgba(254,189,89,.1);display:flex;align-items:center;justify-content:center}
+  .step .ico svg{width:26px;height:26px;color:var(--gold)}
+  .step h3{font-size:16px;color:#fff;font-weight:600}
+  .step p{font-size:13px;color:var(--muted);margin-top:6px}
+
+  /* AUTOMATION example */
+  .auto-card{background:var(--navy2);border:1px solid var(--line);border-radius:16px;padding:22px;max-width:560px}
+  .mail-head{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:12px}
+  .mail-head .av{width:34px;height:34px;border-radius:9px;background:rgba(254,189,89,.12);display:flex;align-items:center;justify-content:center}
+  .mail-head .av svg{width:18px;height:18px;color:var(--gold)}
+  .mail-head .who{font-size:12px;color:var(--muted2)}
+  .mail-head .who b{display:block;color:#fff;font-size:13px;font-weight:600}
+  .mail-body{font-size:14px;color:var(--muted2);line-height:1.7}
+  .sent{margin-top:14px;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--green);font-weight:600}
+  .sent svg{width:16px;height:16px}
+
+  /* BEFORE / AFTER */
+  .ba{display:grid;grid-template-columns:1fr;gap:14px}
+  .col{border-radius:14px;padding:22px}
+  .col h3{font-size:13px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;font-family:var(--body);font-weight:600}
+  .col ul{list-style:none;display:grid;gap:11px}
+  .col li{display:flex;align-items:center;gap:10px;font-size:14px}
+  .col li svg{width:18px;height:18px;flex:0 0 auto}
+  .before{background:#1a0a0a;border:1px solid #3a1515}
+  .before h3{color:var(--red)} .before li{color:#cc8888} .before li svg{color:var(--red)}
+  .after{background:#051a0d;border:1px solid #0d3a1f}
+  .after h3{color:var(--green)} .after li{color:#7ac99a} .after li svg{color:var(--green)}
+
+  /* RESULT */
+  .result{background:var(--navy2);border:1px solid var(--line);border-radius:18px;padding:40px 26px;text-align:center}
+  .result .big{font-family:var(--display);font-weight:700;font-size:34px;letter-spacing:-.03em}
+  .result .big .ar{color:var(--gold);margin:0 8px}
+  .result p{color:var(--muted);margin-top:10px;font-size:15px}
+
+  /* FINAL CTA */
+  .final{background:linear-gradient(180deg,var(--navy) 0,var(--navy2) 100%);text-align:center}
+  .final h2{font-size:28px;max-width:18ch;margin:0 auto}
+  .final .sub{color:var(--muted);margin-top:14px;font-size:15px}
+  .final .actions{margin-top:26px;display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+  .contact{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px 26px;justify-content:center;color:var(--muted2);font-size:14px}
+  .contact a{display:inline-flex;align-items:center;gap:8px;font-weight:500}
+  .contact svg{width:16px;height:16px;color:var(--gold)}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;color:#4a5a6a;font-size:12px}
+  footer b{color:#7d8ea6;font-weight:600}
+
+  @media(min-width:760px){
+    .hero{padding:84px 0 96px}
+    .hero-grid{grid-template-columns:1.05fr .95fr;gap:54px}
+    .hero h1{font-size:52px}
+    .pains{grid-template-columns:repeat(3,1fr)}
+    .steps{grid-template-columns:repeat(3,1fr)}
+    .step:not(:last-child)::after{content:"";position:absolute;top:50%;right:-12px;width:24px;height:2px;background:var(--line)}
+    .ba{grid-template-columns:1fr 1fr}
+    .sec-head h2{font-size:32px}
+    .callout{display:block}
+    .result .big{font-size:46px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}.dot{animation:none}html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <div class="brand">PRO<span>GEST</span></div>
+    <a class="btn" href="#demo">Démo gratuite
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div class="reveal">
+      <div class="eyebrow">Artisans du bâtiment · Haut-Rhin</div>
+      <h1>Votre admin<br><span class="hl">tourne toute seule.</span></h1>
+      <p class="lead">Devis, relances, factures, trésorerie : automatisés. Vous, vous gardez vos soirées.</p>
+      <div class="hero-cta">
+        <a class="btn" href="#demo">Réserver ma démo de 15 min
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="ghost" href="#cockpit">Voir le cockpit</a>
+      </div>
+      <div class="trust">
+        <span><b>&lt; 30 min</b> d'admin / semaine</span>
+        <span><b>Sur mesure</b> selon votre métier</span>
+      </div>
+    </div>
+
+    <!-- SIGNATURE: cockpit -->
+    <div class="reveal" id="cockpit-anchor">
+      <div class="cockpit">
+        <span class="callout" style="top:54px;right:-14px">Mis à jour tout seul</span>
+        <span class="callout" style="bottom:64px;left:-16px">Relance auto</span>
+        <div class="cockpit-top">
+          <div class="tt">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0F6E56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-4 3 3 4-6"/></svg>
+            Cockpit Progest
+          </div>
+          <span class="live"><span class="dot"></span> En direct</span>
+        </div>
+        <div class="kpis">
+          <div class="kpi k-cream"><div class="lab">CA en attente</div><div class="val">12 400 €</div></div>
+          <div class="kpi k-red"><div class="lab">Impayés</div><div class="val">3 200 €</div></div>
+          <div class="kpi k-amber"><div class="lab">Devis ouverts</div><div class="val">5</div></div>
+        </div>
+        <div class="rows">
+          <div class="row"><span class="nm">Facture #087 · Dupont</span><span class="pill p-green">Payée</span></div>
+          <div class="row"><span class="nm">Facture #084 · Meyer SARL</span><span class="pill p-red">En retard</span></div>
+          <div class="row"><span class="nm">Devis #112 · Klein</span><span class="pill p-blue">Relancé</span></div>
+        </div>
+        <div class="spark">
+          <div>
+            <div class="lab">Trésorerie · 30 j</div>
+            <div class="val">+ 4 800 €</div>
+          </div>
+          <svg width="120" height="34" viewBox="0 0 120 34" fill="none"><polyline points="0,26 20,22 40,24 60,15 80,17 100,8 120,5" stroke="#0F6E56" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="120" cy="5" r="3" fill="#0F6E56"/></svg>
+        </div>
+      </div>
+      <p style="text-align:center;color:#5a6b85;font-size:11.5px;margin-top:10px">Aperçu — données d'exemple</p>
+    </div>
+  </div>
+</header>
+
+<!-- PROBLEME -->
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Ça vous parle ?</div>
+      <h2>L'argent qui part sans que vous le voyiez.</h2>
+    </div>
+    <div class="pains">
+      <div class="pain reveal">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+        <div><h3>Devis sans réponse</h3><p>Envoyés, puis oubliés. Sans relance, beaucoup restent lettre morte.</p></div>
+      </div>
+      <div class="pain reveal">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div><h3>Factures payées en retard</h3><p>Pas le temps de relancer. Votre trésorerie attend.</p></div>
+      </div>
+      <div class="pain reveal">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg></div>
+        <div><h3>Pilotage à l'aveugle</h3><p>Impossible de savoir, en un coup d'œil, où vous en êtes.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMENT CA MARCHE -->
+<section style="background:var(--navy2)">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-left:auto;margin-right:auto;text-align:center;max-width:40ch">
+      <div class="eyebrow">Comment ça marche</div>
+      <h2>Trois étapes. Et ça tourne.</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="num">01</div>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></div>
+        <h3>Vos devis &amp; factures</h3><p>On part de votre façon de travailler, telle quelle.</p>
+      </div>
+      <div class="step reveal">
+        <div class="num">02</div>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg></div>
+        <h3>Progest automatise</h3><p>Relances, statuts, trésorerie : le système s'en charge.</p>
+      </div>
+      <div class="step reveal">
+        <div class="num">03</div>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-4 3 3 4-6"/></svg></div>
+        <h3>Vous pilotez</h3><p>Un cockpit clair, à jour, partout — même du chantier.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COCKPIT (rappel ancré) -->
+<section id="cockpit">
+  <div class="wrap" style="display:grid;gap:34px;align-items:center" >
+    <div class="sec-head reveal" style="margin-bottom:0">
+      <div class="eyebrow">Votre cockpit</div>
+      <h2>Tout votre business, sur un écran.</h2>
+      <p style="color:var(--muted);margin-top:14px;font-size:15px">Ce qui est payé, en retard, à relancer. Mis à jour tout seul, en temps réel.</p>
+    </div>
+    <div class="reveal">
+      <div class="cockpit" style="max-width:560px">
+        <div class="cockpit-top">
+          <div class="tt">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0F6E56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-4 3 3 4-6"/></svg>
+            Cockpit Progest
+          </div>
+          <span class="live"><span class="dot"></span> En direct</span>
+        </div>
+        <div class="kpis">
+          <div class="kpi k-cream"><div class="lab">Encaissé · mois</div><div class="val">18 900 €</div></div>
+          <div class="kpi k-red"><div class="lab">À relancer</div><div class="val">2</div></div>
+          <div class="kpi k-amber"><div class="lab">Devis ouverts</div><div class="val">5</div></div>
+        </div>
+        <div class="rows">
+          <div class="row"><span class="nm">Facture #091 · Schmitt</span><span class="pill p-green">Payée</span></div>
+          <div class="row"><span class="nm">Facture #084 · Meyer SARL</span><span class="pill p-red">En retard</span></div>
+          <div class="row"><span class="nm">Facture #088 · Lutz</span><span class="pill p-blue">Relancé</span></div>
+          <div class="row"><span class="nm">Devis #112 · Klein</span><span class="pill p-amber" style="background:var(--amber-bg);color:var(--amber-tx)">En attente</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AUTOMATISATION -->
+<section style="background:var(--navy2)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">L'automatisation en action</div>
+      <h2>Une facture en retard ? Elle se relance seule.</h2>
+    </div>
+    <div class="auto-card reveal">
+      <div class="mail-head">
+        <div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg></div>
+        <div class="who"><b>Relance facture #084 — Meyer SARL</b>À : compta@meyer-sarl.fr</div>
+      </div>
+      <div class="mail-body">« Bonjour, sauf erreur de notre part, la facture du 12/05 (1 840 €) reste en attente de règlement. Un lien de paiement est disponible ci-dessous… »</div>
+      <div class="sent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Envoyée automatiquement — vous n'avez rien fait.</div>
+    </div>
+  </div>
+</section>
+
+<!-- AVANT / APRES -->
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal" style="text-align:center;margin-left:auto;margin-right:auto">
+      <div class="eyebrow">Le changement</div>
+      <h2>Avant. Après.</h2>
+    </div>
+    <div class="ba">
+      <div class="col before reveal">
+        <h3>Avant Progest</h3>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg> Relances oubliées</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg> Trésorerie à l'aveugle</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg> Infos éparpillées</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg> Vos soirées sur l'admin</li>
+        </ul>
+      </div>
+      <div class="col after reveal">
+        <h3>Après Progest</h3>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Relances automatiques</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Cockpit en temps réel</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Tout au même endroit</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> &lt; 30 min / semaine</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="result reveal">
+      <div class="eyebrow" style="display:block;margin-bottom:12px">L'objectif</div>
+      <div class="big">6 h<span class="ar">→</span>45 min</div>
+      <p>d'administratif par semaine. Le reste tourne sans vous.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final" id="demo">
+  <div class="wrap">
+    <h2 class="reveal">On regarde ensemble ce que ça donne chez vous ?</h2>
+    <p class="sub reveal">15 minutes, en visio ou par téléphone. Gratuit, sans engagement.</p>
+    <div class="actions reveal">
+      <a class="btn" href="mailto:contact.progest68@gmail.com?subject=Démo%20Progest">Réserver ma démo
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <div class="contact reveal">
+      <a href="tel:+33669766609"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 06 69 76 66 09</a>
+      <a href="mailto:contact.progest68@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg> contact.progest68@gmail.com</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <b>PROGEST</b> · Zeynep Çayan · Herrlisheim-près-Colmar (68)<br>
+    Organisation &amp; automatisation pour les artisans du Haut-Rhin
+  </div>
+</footer>
+
+<script>
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
